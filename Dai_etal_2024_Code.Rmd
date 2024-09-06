@@ -1,0 +1,281 @@
+---
+title: "Code for Sociodemographic Disparities in Exposures to Inorganic Contaminants in United States Public Water Systems"
+authors: Mona Q. Dai, Xindi C. Hu, Brent A. Coull, Chris Campbell, David Q. Andrews, Olga V. Naidenko, Elsie M. Sunderland
+output: html_document
+last_updated: 9/6/24
+
+Purpose: Run hurdle models and calculate odds ratios for effect sizes at PWS service area and county scales.
+Note: Ensure working directory is set to where data is saved.
+---
+
+Clear environment.
+```{r}
+rm(list=ls())
+gc()
+
+```
+
+Load libraries.
+```{r}
+library(tidyverse)
+library(mltools)
+library(tidymodels)
+library(workflows)
+library(caret)
+
+library(mgcv)
+library(lme4)
+library(lmerTest)
+
+```
+
+Set working directory (path where code + data are saved).
+```{r}
+setwd('path')
+
+```
+
+Load functions.
+```{r}
+source('a_Functions.R')
+
+```
+
+Load data.
+```{r}
+source('b_Load_Data.R')
+
+```
+
+Run models.
+```{r, include = FALSE}
+source('c_Hurdle_PWS.R')
+source('d_Hurdle_County.R')
+
+```
+
+======================================================================================
+Create county OR table.
+```{r}
+# Skip urban_Mn_nonz_county (N/A)
+county_OR <- CreateORtab(
+  # Binomial
+  As_binom_county, urban_As_binom_county, rural_As_binom_county, lg_As_binom_county, sm_As_binom_county,
+  Cr_binom_county, urban_Cr_binom_county, rural_Cr_binom_county, lg_Cr_binom_county, sm_Cr_binom_county,
+  Mn_binom_county, urban_Mn_binom_county, rural_Mn_binom_county, lg_Mn_binom_county, sm_Mn_binom_county,
+  Se_binom_county, urban_Se_binom_county, rural_Se_binom_county, lg_Se_binom_county, sm_Se_binom_county,
+  # Nonzero
+  As_nonz_county, urban_As_nonz_county, rural_As_nonz_county, lg_As_nonz_county, sm_As_nonz_county,
+  Cr_nonz_county, urban_Cr_nonz_county, rural_Cr_nonz_county, lg_Cr_nonz_county, sm_Cr_nonz_county,
+  Mn_nonz_county, rural_Mn_nonz_county, rural_Mn_nonz_county, lg_Mn_nonz_county, sm_Mn_nonz_county,
+  Se_nonz_county, urban_Se_nonz_county, rural_Se_nonz_county, lg_Se_nonz_county, sm_Se_nonz_county
+)
+
+```
+
+View county OR table.
+```{r}
+# county_OR$binom_tab
+# county_OR$nonz_tab
+# 
+# county_OR$As_binom_tab
+# county_OR$As_nonz_tab
+# county_OR$Cr_binom_tab
+# county_OR$Cr_nonz_tab
+# county_OR$Mn_binom_tab
+# county_OR$Mn_nonz_tab
+# county_OR$Se_binom_tab
+# county_OR$Se_nonz_tab
+
+```
+
+======================================================================================
+Create PWS OR table.
+```{r}
+pws_OR <- CreateORtab(
+  # Binomial
+  As_binom_pws, urban_As_binom_pws, rural_As_binom_pws, lg_As_binom_pws, sm_As_binom_pws,
+  Cr_binom_pws, urban_Cr_binom_pws, rural_Cr_binom_pws, lg_Cr_binom_pws, sm_Cr_binom_pws,
+  Mn_binom_pws, urban_Mn_binom_pws, rural_Mn_binom_pws, lg_Mn_binom_pws, sm_Mn_binom_pws,
+  Se_binom_pws, urban_Se_binom_pws, rural_Se_binom_pws, lg_Se_binom_pws, sm_Se_binom_pws,
+  # Nonzero
+  As_nonz_pws, urban_As_nonz_pws, rural_As_nonz_pws, lg_As_nonz_pws, sm_As_nonz_pws,
+  Cr_nonz_pws, urban_Cr_nonz_pws, rural_Cr_nonz_pws, lg_Cr_nonz_pws, sm_Cr_nonz_pws,
+  Mn_nonz_pws, urban_Mn_nonz_pws, rural_Mn_nonz_pws, lg_Mn_nonz_pws, sm_Mn_nonz_pws,
+  Se_nonz_pws, urban_Se_nonz_pws, rural_Se_nonz_pws, lg_Se_nonz_pws, sm_Se_nonz_pws
+)
+
+```
+
+View PWS OR table.
+```{r}
+# pws_OR$binom_tab
+# pws_OR$nonz_tab
+# 
+# pws_OR$As_binom_tab
+# pws_OR$As_nonz_tab
+# pws_OR$Cr_binom_tab
+# pws_OR$Cr_nonz_tab
+# pws_OR$Mn_binom_tab
+# pws_OR$Mn_nonz_tab
+# pws_OR$Se_binom_tab
+# pws_OR$Se_nonz_tab
+
+```
+
+
+========================================================================================================
+Calculate confidence intervals by urban/rural & large/small PWS.
+```{r, warning=F, include=F}
+source('e_Confidence_Intervals.R')
+
+```
+
+Adjust PWS & county df for 1 standard deviation increase in PWS sociodemographic factors.
+```{r}
+# PWS
+As_PWS_binom_df1 <- AdjCounty(As_PWS_binom_df0, uspwsAs0, uspwsAs0)
+Cr_PWS_binom_df1 <- AdjCounty(Cr_PWS_binom_df0, uspwsCr0, uspwsCr0)
+Mn_PWS_binom_df1 <- AdjCounty(Mn_PWS_binom_df0, uspwsMn0, uspwsMn0)
+Se_PWS_binom_df1 <- AdjCounty(Se_PWS_binom_df0, uspwsSe0, uspwsSe0)
+
+As_PWS_nonz_df1 <- AdjCounty(As_PWS_nonz_df0, filter(uspwsAs0, NONZERO == 1), uspwsAs0)
+Cr_PWS_nonz_df1 <- AdjCounty(Cr_PWS_nonz_df0, filter(uspwsCr0, NONZERO == 1), uspwsCr0)
+Mn_PWS_nonz_df1 <- AdjCounty(Mn_PWS_nonz_df0, filter(uspwsMn0, NONZERO == 1), uspwsMn0)
+Se_PWS_nonz_df1 <- AdjCounty(Se_PWS_nonz_df0, filter(uspwsSe0, NONZERO == 1), uspwsSe0)
+
+# County
+As_County_binom_df1 <- AdjCounty(As_County_binom_df0, uscountyAs0, uspwsAs0)
+Cr_County_binom_df1 <- AdjCounty(Cr_County_binom_df0, uscountyCr0, uspwsCr0)
+Mn_County_binom_df1 <- AdjCounty(Mn_County_binom_df0, uscountyMn0, uspwsMn0)
+Se_County_binom_df1 <- AdjCounty(Se_County_binom_df0, uscountySe0, uspwsSe0)
+
+As_County_nonz_df1 <- AdjCounty(As_County_nonz_df0, filter(uscountyAs0, NONZERO == 1), uspwsAs0)
+Cr_County_nonz_df1 <- AdjCounty(Cr_County_nonz_df0, filter(uscountyCr0, NONZERO == 1), uspwsCr0)
+Mn_County_nonz_df1 <- AdjCounty(Mn_County_nonz_df0, filter(uscountyMn0, NONZERO == 1), uspwsMn0)
+Se_County_nonz_df1 <- AdjCounty(Se_County_nonz_df0, filter(uscountySe0, NONZERO == 1), uspwsSe0)
+
+```
+
+PWS.
+```{r}
+## Filter for predictors of primary interest: limited English-speaking house holds (NOENG), Black residents (BLACK), & PIR<2 (POVERTY200)
+# Binomial
+as_burls_pws          <- filter(As_PWS_binom_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+as_burls_pws$Chemical <- 'Arsenic'
+as_burls_pws$Hurdle   <- 'Binomial'
+cr_burls_pws          <- filter(Cr_PWS_binom_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+cr_burls_pws$Chemical <- 'Chromium'
+cr_burls_pws$Hurdle   <- 'Binomial'
+mn_burls_pws          <- filter(Mn_PWS_binom_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+mn_burls_pws$Chemical <- 'Manganese'
+mn_burls_pws$Hurdle   <- 'Binomial'
+se_burls_pws          <- filter(Se_PWS_binom_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+se_burls_pws$Chemical <- 'Selenium'
+se_burls_pws$Hurdle   <- 'Binomial'
+# Nonzero regression
+as_nurls_pws          <- filter(As_PWS_nonz_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+as_nurls_pws$Chemical <- 'Arsenic'
+as_nurls_pws$Hurdle   <- 'Nonzero'
+cr_nurls_pws          <- filter(Cr_PWS_nonz_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+cr_nurls_pws$Chemical <- 'Chromium'
+cr_nurls_pws$Hurdle   <- 'Nonzero'
+mn_nurls_pws          <- filter(Mn_PWS_nonz_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+mn_nurls_pws$Chemical <- 'Manganese'
+mn_nurls_pws$Hurdle   <- 'Nonzero'
+se_nurls_pws          <- filter(Se_PWS_nonz_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+se_nurls_pws$Chemical <- 'Selenium'
+se_nurls_pws$Hurdle   <- 'Nonzero'
+
+## Combine all
+all_bnurls_pws <- rbind(as_burls_pws, cr_burls_pws, mn_burls_pws, se_burls_pws,
+                        as_nurls_pws, cr_nurls_pws, mn_nurls_pws, se_nurls_pws)
+
+## Resort by predictor
+all_bnurls_pws <- Orderby(all_bnurls_pws, 'Predictor', de.creasing = F)
+
+## Break back down into individual df
+urban_burls_pws <- filter(all_bnurls_pws, ID == "Urban" & Hurdle == "Binomial")
+rural_burls_pws <- filter(all_bnurls_pws, ID == "Rural" & Hurdle == "Binomial")
+lg_burls_pws    <- filter(all_bnurls_pws, ID == "Large PWS" & Hurdle == "Binomial")
+sm_burls_pws    <- filter(all_bnurls_pws, ID == "Small PWS" & Hurdle == "Binomial")
+
+urban_nurls_pws <- filter(all_bnurls_pws, ID == "Urban" & Hurdle == "Nonzero")
+rural_nurls_pws <- filter(all_bnurls_pws, ID == "Rural" & Hurdle == "Nonzero")
+lg_nurls_pws    <- filter(all_bnurls_pws, ID == "Large PWS" & Hurdle == "Nonzero")
+sm_nurls_pws    <- filter(all_bnurls_pws, ID == "Small PWS" & Hurdle == "Nonzero")
+
+```
+
+```{r}
+## Filter for predictors of primary interest
+# Binomial
+as_burls_county          <- filter(As_County_binom_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+as_burls_county$Chemical <- 'Arsenic'
+as_burls_county$Hurdle   <- 'Binomial'
+cr_burls_county          <- filter(Cr_County_binom_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+cr_burls_county$Chemical <- 'Chromium'
+cr_burls_county$Hurdle   <- 'Binomial'
+mn_burls_county          <- filter(Mn_County_binom_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+mn_burls_county$Chemical <- 'Manganese'
+mn_burls_county$Hurdle   <- 'Binomial'
+se_burls_county          <- filter(Se_County_binom_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+se_burls_county$Chemical <- 'Selenium'
+se_burls_county$Hurdle   <- 'Binomial'
+# Nonzero regression
+as_nurls_county          <- filter(As_County_nonz_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+as_nurls_county$Chemical <- 'Arsenic'
+as_nurls_county$Hurdle   <- 'Nonzero'
+cr_nurls_county          <- filter(Cr_County_nonz_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+cr_nurls_county$Chemical <- 'Chromium'
+cr_nurls_county$Hurdle   <- 'Nonzero'
+mn_nurls_county          <- filter(Mn_County_nonz_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+mn_nurls_county$Chemical <- 'Manganese'
+mn_nurls_county$Hurdle   <- 'Nonzero'
+se_nurls_county          <- filter(Se_County_nonz_df1, Predictor %in% c('NOENG', 'BLACK', 'POVERTY200'))
+se_nurls_county$Chemical <- 'Selenium'
+se_nurls_county$Hurdle   <- 'Nonzero'
+
+## Combine all
+all_bnurls_county <- rbind(as_burls_county, cr_burls_county, mn_burls_county, se_burls_county,
+                           as_nurls_county, cr_nurls_county, mn_nurls_county, se_nurls_county)
+
+## Resort by predictor
+all_bnurls_county <- Orderby(all_bnurls_county, 'Predictor', de.creasing = F)
+
+## Break back down into individual df
+urban_burls_county <- filter(all_bnurls_county, ID == "Urban" & Hurdle == "Binomial")
+rural_burls_county <- filter(all_bnurls_county, ID == "Rural" & Hurdle == "Binomial")
+lg_burls_county    <- filter(all_bnurls_county, ID == "Large PWS" & Hurdle == "Binomial")
+sm_burls_county    <- filter(all_bnurls_county, ID == "Small PWS" & Hurdle == "Binomial")
+
+urban_nurls_county <- filter(all_bnurls_county, ID == "Urban" & Hurdle == "Nonzero")
+rural_nurls_county <- filter(all_bnurls_county, ID == "Rural" & Hurdle == "Nonzero")
+lg_nurls_county    <- filter(all_bnurls_county, ID == "Large PWS" & Hurdle == "Nonzero")
+sm_nurls_county    <- filter(all_bnurls_county, ID == "Small PWS" & Hurdle == "Nonzero")
+
+```
+
+-------------------------
+Join adjusted PWS & County dataframes into 1 dataframe.
+```{r}
+As_PWScounty_binom_df1 <- JoinAdjusted(As_PWS_binom_df1, As_County_binom_df1)
+Cr_PWScounty_binom_df1 <- JoinAdjusted(Cr_PWS_binom_df1, Cr_County_binom_df1)
+Mn_PWScounty_binom_df1 <- JoinAdjusted(Mn_PWS_binom_df1, Mn_County_binom_df1)
+Se_PWScounty_binom_df1 <- JoinAdjusted(Se_PWS_binom_df1, Se_County_binom_df1)
+
+As_PWScounty_nonz_df1 <- JoinAdjusted(As_PWS_nonz_df1, As_County_nonz_df1)
+Cr_PWScounty_nonz_df1 <- JoinAdjusted(Cr_PWS_nonz_df1, Cr_County_nonz_df1)
+Mn_PWScounty_nonz_df1 <- JoinAdjusted(Mn_PWS_nonz_df1, Mn_County_nonz_df1)
+Se_PWScounty_nonz_df1 <- JoinAdjusted(Se_PWS_nonz_df1, Se_County_nonz_df1)
+
+```
+
+
+
+
+
+
+
+
+
