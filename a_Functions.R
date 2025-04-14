@@ -1,5 +1,5 @@
 ## a_Functions: Supporting code file to load functions required to run drinking water models.
-# date updated: 9/6/24
+# date updated: 4/5/25
 # =========================================================================================================
 # =========================================================================================================
 ## Create a function that will save all metal subsets in 1 list.
@@ -32,6 +32,7 @@ ListHurdle <- function(uspwsMetal0, METAL.NAME) {
 
 ## Functions to calculate confidence intervals.
 ## --------------------------------------------------------------------------------------------------------
+## Function to split train & test data + conduct modeling specific to hurdle model
 ## Function to split train & test data + conduct modeling specific to hurdle model
 RegressMetal <- function(uspws_split_ls, METAL.NAME, mod.name) {
   
@@ -306,39 +307,39 @@ RegressMetal <- function(uspws_split_ls, METAL.NAME, mod.name) {
 # =========================================================================================================
 ## Function to make predictions using other parts of Hurdle model.
 # ----------------------------------------------------------------------------------------------------------
-PredictHurdle <- function(binom_mod, nonz_mod, test_dat) {
-  # Hurdle Part I - Make predictions on probability of nonzero value
-  pi.binomial <-
-    stats::predict(binom_mod, newdata = test_dat, type = "response")
-  
-  # length(pi.binomial) %>% print()
-  
-  # Hurdle Part II - Make metal concentration predictions
-  eta.gamma <-
-    stats::predict(nonz_mod, newdata = test_dat, type = "response")
-  
-  # DL depending on metal
-  if (colnames(test_dat)[2] == "ARSENIC") {
-    DL <- 0.0014
-  } else if (colnames(test_dat)[2] == "CHROMIUM") {
-    DL <- 0.001
-  } else if (colnames(test_dat)[2] == "MANGANESE" |
-             colnames(test_dat)[2] == "SELENIUM") {
-    DL <- 2e-5
-  }
-  # Add back DL/sqrt(2)
-  mu.gamma <- eta.gamma + (DL / sqrt(2))
-  
-  # Make vector
-  mu <- rep(DL / sqrt(2), nrow(test_dat))
-  mu[test_dat$NONZERO == 1] <- mu.gamma
-  
-  ## Make final Hurdle prediction (expected value)
-  ExpY <- pi.binomial * mu
-  
-  # return(list(pi.binomial = pi.binomial, mu.gamma = mu.gamma, mu = mu, ExpY = ExpY))
-  return(ExpY)
-}
+# PredictHurdle <- function(binom_mod, nonz_mod, test_dat) {
+#   # Hurdle Part I - Make predictions on probability of nonzero value
+#   pi.binomial <-
+#     stats::predict(binom_mod, newdata = test_dat, type = "response")
+#   
+#   # length(pi.binomial) %>% print()
+#   
+#   # Hurdle Part II - Make metal concentration predictions
+#   eta.gamma <-
+#     stats::predict(nonz_mod, newdata = test_dat, type = "response")
+#   
+#   # DL depending on metal
+#   if (colnames(test_dat)[2] == "ARSENIC") {
+#     DL <- 0.0014
+#   } else if (colnames(test_dat)[2] == "CHROMIUM") {
+#     DL <- 0.001
+#   } else if (colnames(test_dat)[2] == "MANGANESE" |
+#              colnames(test_dat)[2] == "SELENIUM") {
+#     DL <- 2e-5
+#   }
+#   # Add back DL/sqrt(2)
+#   mu.gamma <- eta.gamma + (DL / sqrt(2))
+#   
+#   # Make vector
+#   mu <- rep(DL / sqrt(2), nrow(test_dat))
+#   mu[test_dat$NONZERO == 1] <- mu.gamma
+#   
+#   ## Make final Hurdle prediction (expected value)
+#   ExpY <- pi.binomial * mu
+#   
+#   # return(list(pi.binomial = pi.binomial, mu.gamma = mu.gamma, mu = mu, ExpY = ExpY))
+#   return(ExpY)
+# }
 
 #
 ## Function to create tables for PWS & County

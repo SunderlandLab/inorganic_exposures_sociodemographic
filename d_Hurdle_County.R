@@ -152,8 +152,8 @@ urban_Cr_nonz_county <- RegressMetal(uscountyCr_ls$Urban, 'CHROMIUM', 'nonzero')
 # summary(urban_Cr_nonz_county$mfixR1)
 # urban_Cr_nonz_county$eval
 
-# Mn - ERROR -- DOES NOT RUN 
-# urban_Mn_nonz_county <- RegressMetal(uscountyMn_ls$Urban, 'MANGANESE', 'nonzero') # No 95th, 75th, 50th
+# Mn - ERROR -- Too few PWS.
+# urban_Mn_nonz_county <- RegressMetal(uscountyMn_ls$Urban, 'MANGANESE', 'nonzero') 
 # summary(urban_Mn_nonz_county$mfixR1)
 # urban_Mn_nonz_county$eval
 
