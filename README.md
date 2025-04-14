@@ -2,7 +2,7 @@ Sociodemographic Disparities in Exposures to Inorganic Contaminants in United St
 
 Authors: Mona Q. Dai, Xindi C. Hu, Brent A. Coull, Chris Campbell, David Q. Andrews, Olga V. Naidenko, Elsie M. Sunderland
 
-Last Updated: 9/6/24
+Last Updated: 4/11/25
 
 
 Introduction
@@ -49,8 +49,44 @@ Data
 
 All data files can be found on Harvard Dataverse (https://doi.org/10.7910/DVN/QJA4NY).
 
-    uspws.csv - Outcome and predictor variable data for public water systems (PWS) used in hurdle models.
-    uscounty.csv - Outcome and predictor variable data for counties used in hurlde models.
+    Arsenic_pws_50pct.csv - Arsenic concentration 50th percentile outcome and predictor variable data for public water system (PWS)        used in hurdle model.
+    Arsenic_pws_75pct.csv - Arsenic concentration 75th percentile outcome and predictor variable data for public water system (PWS)         used in hurdle model.
+    Arsenic_pws_95pct.csv - Arsenic concentration 95th percentile outcome and predictor variable data for public water system (PWS)         used in hurdle model.
+    Chromium_pws_50pct.csv - Chromium concentration 50th percentile outcome and predictor variable data for public water system (PWS)       used in hurdle model.
+    Chromium_pws_75pct.csv - Chromium concentration 75th percentile outcome and predictor variable data for public water system (PWS)       used in hurdle model.
+    Chromium_pws_95pct.csv - Chromium concentration 95th percentile outcome and predictor variable data for public water system (PWS)       used in hurdle model.
+    Manganese_pws_50pct.csv - Manganese concentration 50th percentile outcome and predictor variable data for public water system           (PWS) used in hurdle model.
+    Manganese_pws_75pct.csv - Manganese concentration 75th percentile outcome and predictor variable data for public water system           (PWS) used in hurdle model.
+    Manganese_pws_95pct.csv - Manganese concentration 95th percentile outcome and predictor variable data for public water system           (PWS) used in hurdle model.
+    Selenium_pws_50pct.csv - Selenium concentration 50th percentile outcome and predictor variable data for public water system (PWS)       used in hurdle model.
+    Selenium_pws_75pct.csv - Selenium concentration 75th percentile outcome and predictor variable data for public water system (PWS)       used in hurdle model.
+    Selenium_pws_95pct.csv - Selenium concentration 95th percentile outcome and predictor variable data for public water system (PWS)       used in hurdle model.
+      
+    Arsenic_county_50pct.csv - Arsenic concentration 50th percentile outcome and predictor variable data for county used in hurdle   
+      model.
+    Arsenic_county_75pct.csv - Arsenic concentration 75th percentile outcome and predictor variable data for county used in hurdle   
+      model.
+    Arsenic_county_95pct.csv - Arsenic concentration 95th percentile outcome and predictor variable data for county used in hurdle   
+      model.
+    Chromium_county_50pct.csv - Chromium concentration 50th percentile outcome and predictor variable data for county used in hurdle  
+      model.
+    Chromium_county_75pct.csv - Chromium concentration 75th percentile outcome and predictor variable data for county used in hurdle  
+      model.
+    Chromium_county_95pct.csv - Chromium concentration 95th percentile outcome and predictor variable data for county used in hurdle  
+      model.
+    Manganese_county_50pct.csv - Manganese concentration 50th percentile outcome and predictor variable data for county used in hurdle
+      model.
+    Manganese_county_75pct.csv - Manganese concentration 75th percentile outcome and predictor variable data for county used in hurdle
+      model.
+    Manganese_county_95pct.csv - Manganese concentration 95th percentile outcome and predictor variable data for county used in hurdle
+      model.
+    Selenium_county_50pct.csv - Selenium concentration 50th percentile outcome and predictor variable data for county used in hurdle
+      model.
+    Selenium_county_75pct.csv - Selenium concentration 75th percentile outcome and predictor variable data for county used in hurdle
+      model.
+    Selenium_county_95pct.csv - Selenium concentration 95th percentile outcome and predictor variable data for county used in hurdle
+      model.
+      
     uspws.geojson - Spatial file for public water system data.
     uscounty.geojson - Spatial file for county data.
 
